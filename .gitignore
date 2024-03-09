@@ -1,4 +1,5 @@
 .mac_env
+.win_env
 # dataset/
 *.pkl
 *.gz
