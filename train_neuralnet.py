@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 from dataset.mnist import load_mnist
 from two_layer_net import TwoLayerNet
@@ -10,16 +9,13 @@ from two_layer_net import TwoLayerNet
 train_loss_list = []
 
 # hyper parameter
-iters_num = 10
+iters_num = 5
 train_size = x_train.shape[0]
 batch_size = 100
 learning_rate = 0.1
 
 network = TwoLayerNet(input_size=784, hidden_size=50, output_size= 10)
 
-iters_num = 1
-print("Start")
-start_time = time.time()
 for i in range(iters_num):
     print(f"trial: {i}")
     # ミニバッチの取得
@@ -37,10 +33,8 @@ for i in range(iters_num):
     # record
     loss = network.loss(x_batch, t_batch)
     train_loss_list.append(loss)
-    # break
-end_time = time.time()
-print(f"time: {end_time-start_time}")   # 16.85s
-# print(train_loss_list)
+
+print(train_loss_list)
 x = np.arange(0, iters_num, 1)
 plt.plot(train_loss_list)
 plt.show()
