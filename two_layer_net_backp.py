@@ -6,27 +6,18 @@
 
 # import sys, os
 import numpy as np
-import json
 from ch5_layer.layers import *
 from ch4_gradient_simplenet import numerical_gradient
 from collections import OrderedDict
 
 class TwoLayerNet:
-    def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01, load=False):
-        self.params = {}
-
-        if load :
-            with open('param.json') as f:
-                load_data = json.load(f)
-            for key in ('W1', 'b1', 'W2', 'b2'):
-                param = load_data[key]
-                self.params[key] = np.array(param)
-        else:
+    def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):
         # 重みとバイアスのパラメータ初期化
-            self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
-            self.params['b1'] = np.zeros(hidden_size)
-            self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
-            self.params['b2'] = np.zeros(output_size)
+        self.params = {}
+        self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
+        self.params['b1'] = np.zeros(hidden_size)
+        self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
+        self.params['b2'] = np.zeros(output_size)
 
         # レイヤーの作成
         self.layers = OrderedDict() #順番付きの辞書にする
@@ -35,18 +26,6 @@ class TwoLayerNet:
         self.layers['Affine2'] = Affine(self.params['W2'], self.params['b2'])
 
         self.lastLayer = SoftMaxWithLoss()
-
-    def save_params(self, json_file):
-        network_dict = {}
-        for key in ('W1', 'b1', 'W2', 'b2'):
-            param = self.params[key]
-            print(param[0])
-            network_dict[key] = param.tolist()
-
-        with open(json_file, 'w') as f:
-            json.dump(network_dict, f, indent=2)
-
-        print("model saved")
 
     def predict(self, x):
         for layer in self.layers.values():
