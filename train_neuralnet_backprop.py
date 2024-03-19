@@ -48,12 +48,13 @@ for i in range(iters_num):
         test_acc_list.append(test_acc)
         print(train_acc, test_acc)
 
+network.save_params('param.json')
 
 img_num = 12
 
 print(t_test[img_num])
-pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
-pil_img.show()
+# pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
+# pil_img.show()
 
 prediction = np.argmax(network.predict([x_test[img_num]]))
 print("predict1: ", prediction)
@@ -61,8 +62,8 @@ print("predict1: ", prediction)
 
 img_num = 345
 
-pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
-pil_img.show()
+# pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
+# pil_img.show()
 
 prediction = np.argmax(network.predict([x_test[img_num]]))
 print("predict2: ", prediction)
