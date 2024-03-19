@@ -13,9 +13,9 @@ from two_layer_net_backp import TwoLayerNet
 if __name__ == "__main__":
 
     network_dict = {}
-    network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10)
+    network = TwoLayerNet(input_size=3, hidden_size=2, output_size=4)
 
-    print(network.params.keys())
+    print(network.params)
     for key in ('W1', 'b1', 'W2', 'b2'):
         param = network.params[key]
         param_list = param.tolist()
@@ -33,9 +33,11 @@ if __name__ == "__main__":
 
     load_params = {}
     for key in ('W1', 'b1', 'W2', 'b2'):
-        param = load_data['W1']
+        param = load_data[key]
         param_np = np.array(param)
         load_params[key] = param_np
-    print(load_params.keys())
+    print(load_params)
+
+    print(load_params['W1'] == network.params['W1'])
     # json_w1 = json.dumps({ i: e for i, e in enumerate(list_w1)})
 
