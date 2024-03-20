@@ -12,7 +12,7 @@ from PIL import Image
 
 network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10)
 
-iters_num = 10000
+iters_num = 50000
 train_size = x_train.shape[0]
 batch_size = 100
 learning_rate = 0.1
@@ -52,7 +52,7 @@ network.save_params('param.json')
 
 img_num = 12
 
-print(t_test[img_num])
+print(np.argmax(t_test[img_num]))
 # pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
 # pil_img.show()
 
@@ -62,10 +62,9 @@ print("predict1: ", prediction)
 
 img_num = 345
 
-# pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
-# pil_img.show()
-
-prediction = np.argmax(network.predict([x_test[img_num]]))
+# # pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
+# # pil_img.show()
+print(np.argmax(t_test[img_num]))
 print("predict2: ", prediction)
 
 

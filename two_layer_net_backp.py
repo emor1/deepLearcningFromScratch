@@ -16,17 +16,19 @@ class TwoLayerNet:
         self.params = {}
 
         if load :
-            with open('param.json') as f:
+            with open('../param.json') as f:
                 load_data = json.load(f)
             for key in ('W1', 'b1', 'W2', 'b2'):
                 param = load_data[key]
                 self.params[key] = np.array(param)
+            print("loaded")
         else:
         # 重みとバイアスのパラメータ初期化
             self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
             self.params['b1'] = np.zeros(hidden_size)
             self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
             self.params['b2'] = np.zeros(output_size)
+            print("init")
 
         # レイヤーの作成
         self.layers = OrderedDict() #順番付きの辞書にする
