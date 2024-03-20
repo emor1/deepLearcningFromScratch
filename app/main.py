@@ -66,7 +66,7 @@ button = pygame.Rect(offset_x+((cell_size*input_x)/2)-button_x/2, offset_y+cell_
 
 button2 = pygame.Rect(offset_x+cell_size*input_x+80, 200, 100, 50)
 
-#STEP1.フォントの用意  
+#STEP1.フォントの用意
 font = pygame.font.SysFont(None, 25)
 
 #STEP2.テキストの設定
@@ -95,18 +95,23 @@ while True:
     for i in range(input_x):
         for j in range(input_y):
             pygame.draw.rect(screen, input_field[i][j], (i*cell_size+offset_x, j*cell_size+offset_y, cell_size, cell_size), )
-            cell[index] = np.mean(input_field[i][j])
+            cell[index] = np.mean(input_field[j][i])
             index+=1
     np_cell = np.array(cell)/255.0
 
     pygame.display.update()
     for event in pygame.event.get():
+        # 描画の処理
         if event.type ==MOUSEMOTION and isPressed:
                 mouse_Pos = pygame.mouse.get_pos()
                 if mouse_Pos[0] >= cell_size*input_x+offset_x or mouse_Pos[1] >= cell_size*input_y + offset_y or mouse_Pos[0] < offset_x or mouse_Pos[1] < offset_y:
                     continue
+
+                # マウスがいるセルを計算
                 x = int((mouse_Pos[0]-offset_x)/cell_size)
                 y = int((mouse_Pos[1]-offset_y)/cell_size)
+
+                # マウスがあるセルを真っ白に、上下左右は+50明るくする
                 input_field[x][y] = (230,230,230)
                 if x+1<input_x:
                     lst = np.array(input_field[x+1][y])
@@ -133,20 +138,23 @@ while True:
             if event.button == 1:
                 isPressed = True
 
+            # リセットボタンが押された時の処理
             if button.collidepoint(event.pos):
+                # キャンバスを真っ白にする
                 input_field = [[(0,0,0)]*input_x for i in range(input_y)]
 
+            # Predictボタンが押された時
             if button2.collidepoint(event.pos):
-                trial += 1
-                # processed_cell = preprocessing(np_cell)
+                trial += 1 #試行回数をカウントアップ
+
+                # 予測する
                 predict = str(np.argmax(network.predict(np_cell)))
                 print(trial, predict)
+                print(network.predict(np_cell))
+                print(sum(network.predict(np_cell)))
 
         elif event.type == MOUSEBUTTONUP:
             isPressed = False
-                # print(x, y)
-                # print(input_field)
-
 
         if event.type == QUIT:
             pygame.quit()
