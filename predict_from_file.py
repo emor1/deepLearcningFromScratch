@@ -12,8 +12,11 @@ from PIL import Image
 
 network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10, load=True)
 
-img_num = 19
-print(t_test[img_num])
+img_num = 70
+# print(t_test[img_num])
+print(np.argmax(t_test[img_num]))
 print("predict: ", np.argmax(network.predict([x_test[img_num]])))
-# pil_img = Image.fromarray(np.uint(x_test[img_num].reshape(28,28)*255))
-# pil_img.show()
+
+
+pil_img = Image.fromarray(np.uint8(x_test[img_num].reshape(28,28)*255))
+pil_img.show()
