@@ -16,26 +16,7 @@ from pygame.locals import *
 import cv2
 
 sys.path.append(os.pardir)
-# from dataset.mnist import load_mnist
 from two_layer_net_backp import TwoLayerNet
-
-# 入力の前処理
-def preprocessing(input):
-    input = input.reshape(28,28)
-    # 平滑化
-    input_data_smoothed = cv2.GaussianBlur(input, (3,3), 0)
-    #二極化
-    input_data_smoothed_8u = (input_data_smoothed).astype(np.uint8)
-    _, input_data_binarized = cv2.threshold(input_data_smoothed_8u, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    input_data_dilated = cv2.dilate(input_data_binarized, (3,3), iterations=1)
-
-    # 収縮処理
-    input_data_eroded = cv2.erode(input_data_dilated, (3,3), iterations=1)
-    input_data_final = input_data_eroded/255.0
-    input_data_final = input_data_final.reshape(28, 28, 1)
-    print(input_data_final.ravel())
-    return input_data_final.ravel()
 
 # init
 pygame.init()
@@ -44,7 +25,6 @@ gray = (122,122,122)
 black = (0, 0, 0)
 
 # init DNN
-# (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
 network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10, load=True)
 
 
@@ -64,32 +44,28 @@ isPressed = False
 button_x = 100
 button = pygame.Rect(offset_x+((cell_size*input_x)/2)-button_x/2, offset_y+cell_size*input_y+10, button_x, 50)  # creates a rect object
 
-button2 = pygame.Rect(offset_x+cell_size*input_x+80, 200, 100, 50)
-
 #STEP1.フォントの用意
 font = pygame.font.SysFont(None, 25)
 
 #STEP2.テキストの設定
 text1 = font.render("Reset", True, (0,0,0))
-text2 = font.render("Predict", True, (0,0,0))
+text2 = font.render("Prediction: ", True, (0,0,0))
 
 cell = [0 for x in range(input_x*input_y)]
 
 trial = 0
-predict = str(0)
+predict = " "
 
 while True:
-    # if pygame.mouse.get_pressed():
     screen.fill(gray)
     pygame.draw.rect(screen, (200, 200, 200), button)
-    pygame.draw.rect(screen, (200, 200, 200), button2)
     screen.blit(text1, (offset_x+((cell_size*input_x)/2)-25, offset_y+cell_size*input_y+25))
-    screen.blit(text2, (offset_x+cell_size*input_x+90, 220))
+    screen.blit(text2, (offset_x+cell_size*input_x+50, 80))
 
-    # prediction
-    font = pygame.font.SysFont(None, 100)
+    # prediction text
+    font = pygame.font.SysFont(None, 200)
     prediction = font.render(predict, True, (0,0,0))
-    screen.blit(prediction, (offset_x+cell_size*input_x+100, 100))
+    screen.blit(prediction, (offset_x+cell_size*input_x+100, 120))
 
     index = 0
     for i in range(input_x):
@@ -98,6 +74,7 @@ while True:
             cell[index] = np.mean(input_field[j][i])
             index+=1
     np_cell = np.array(cell)/255.0
+
 
     pygame.display.update()
     for event in pygame.event.get():
@@ -133,6 +110,9 @@ while True:
                     lst += 50
                     lst = np.clip(lst, 0, 255)
                     input_field[x][y-1] = tuple(lst)
+                # 予測
+                predict = str(np.argmax(network.predict(np_cell)))
+                print(network.predict(np_cell))
 
         if event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -142,16 +122,7 @@ while True:
             if button.collidepoint(event.pos):
                 # キャンバスを真っ白にする
                 input_field = [[(0,0,0)]*input_x for i in range(input_y)]
-
-            # Predictボタンが押された時
-            if button2.collidepoint(event.pos):
-                trial += 1 #試行回数をカウントアップ
-
-                # 予測する
-                predict = str(np.argmax(network.predict(np_cell)))
-                print(trial, predict)
-                print(network.predict(np_cell))
-                print(sum(network.predict(np_cell)))
+                predict = " "
 
         elif event.type == MOUSEBUTTONUP:
             isPressed = False
