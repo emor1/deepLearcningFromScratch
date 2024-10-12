@@ -1,5 +1,6 @@
 .mac_env
 .win_env
+zeroDeep/
 # dataset/
 *.pkl
 *.gz
