@@ -42,6 +42,9 @@ class Affine:
         self.db = None
 
     def forward(self,x):
+        # テンソル対応
+        self.original_x_shape = x.shape
+        x = x.reshape(x.shape[0], -1)
         self.x = x
         out = np.dot(x, self.W) + self.b
 
@@ -51,7 +54,7 @@ class Affine:
         dx = np.dot(dout, self.W.T)
         self.dW = np.dot(self.x.T, dout)
         self.db = np.sum(dout, axis=0)
-
+        dx = dx.reshape(*self.original_x_shape)  # 入力データの形状に戻す（テンソル対応）
         return dx
 
 class SoftMaxWithLoss:
@@ -69,17 +72,23 @@ class SoftMaxWithLoss:
 
     def backward(self, dout =1):
         batch_size = self.t.shape[0]
-        dx = (self.y - self.t)/batch_size
+        if self.t.size == self.y.size: # 教師データがone-hot-vectorの場合
+            dx = (self.y - self.t) / batch_size
+        else:
+            dx = self.y.copy()
+            dx[np.arange(batch_size), self.t] -= 1
+            dx = dx / batch_size
         return dx
 
     def cross_entropy_error(self, y, t):
         if y.ndim == 1:
             t = t.reshape(1, t.size)
-            y = y.reshape(1, t.size)
-
+            y = y.reshape(1, y.size)
+        # 教師データがone-hot-vectorの場合、正解ラベルのインデックスに変換
+        if t.size == y.size:
+            t = t.argmax(axis=1)
         batch_size = y.shape[0]
-        return -np.sum(t*np.log(y+ 1e-7))/batch_size
-
+        return -np.sum(np.log(y[np.arange(batch_size), t] + 1e-7)) / batch_size
 # ソフトマックス関数
 def softmax(x):
     x = x - np.max(x, axis=-1, keepdims=True)   # オーバーフロー対策
